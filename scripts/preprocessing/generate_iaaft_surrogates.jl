@@ -1,38 +1,36 @@
 
-Pkg.add("DataFrames", "CSV", "TimeseriesSurrogates")
 
 using DataFrames, CSV, TimeseriesSurrogates
 
-
-surrogate_iterations = 1:30
-surrogate_column_names =
-
+n_surrogates = 30
 
 for pair in 201:212
+
     for trial in 1:28
 
-        pair = 201
-        trial = 1
         filename = string("data/processed_marker_data/Pair_", pair, "_trial_", trial, ".csv")
 
-        ts = CSV.read(filename);
 
-        p1_df =
-        p2_df = DataFrame()
+        marker_positions = CSV.read(filename)
 
-        for i in 1:30
-            p1_df[i] = iaaft(ts.z)
+        #individual lateral hand positions
+        p1_hand_pos = marker_positions.p1handZ .- minimum(marker_positions.p1handZ) .+ 1
+        p2_hand_pos = marker_positions.p2handZ .- minimum(marker_positions.p1handZ) .+ 1
 
+        # preallocate surrogate arrays
+        p1_surrogates = Array{Float64}(undef, nrow(ts), n_surrogates)
+        p2_surrogates = Array{Float64}(undef, nrow(ts), n_surrogates)
+
+        for i in 1:n_surrogates
+            p1_surrogates[:,i] = iaaft(p1_hand_pos)
+            p2_surrogates[:,i] = iaaft(p2_hand_pos)
         end
 
-        outputFilename = string("surrogateTS/Pair_", pair, "_trial_", trial, ".txt")
+        p1_outputFilename = string("data/surrogateTS/Pair_", pair, "_trial_", trial, "_p1.txt")
+        p2_outputFilename = string("data/surrogateTS/Pair_", pair, "_trial_", trial, "_p2.txt")
 
-        CSV.write(outputFilename, df)
+
+        CSV.write(p1_outputFilename, DataFrame(p1_surrogates))
+        CSV.write(p2_outputFilename, DataFrame(p2_surrogates))
     end
 end
-
-pair = 201
-trial = 1
-filename = string("data/processed_marker_data/Pair_", pair, "_trial_", trial, ".csv")
-DataFrame([Float64, Float64, Float64], [:x], 10)
-ts = CSV.read(filename);
