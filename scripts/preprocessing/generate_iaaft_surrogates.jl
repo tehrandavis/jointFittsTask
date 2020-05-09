@@ -18,8 +18,8 @@ for pair in 201:212
         p2_hand_pos = marker_positions.p2handZ .- minimum(marker_positions.p1handZ) .+ 1
 
         # preallocate surrogate arrays
-        p1_surrogates = Array{Float64}(undef, nrow(ts), n_surrogates)
-        p2_surrogates = Array{Float64}(undef, nrow(ts), n_surrogates)
+        p1_surrogates = Array{Float64}(undef, length(p1_hand_pos), n_surrogates)
+        p2_surrogates = Array{Float64}(undef, length(p2_hand_pos), n_surrogates)
 
         for i in 1:n_surrogates
             p1_surrogates[:,i] = iaaft(p1_hand_pos)
