@@ -1,4 +1,4 @@
-using DataFrames, CSV
+using DataFrames, CSV, ProgressMeter
 
 qValues = [-5:5;]
 scales = [3:11;]
@@ -8,7 +8,7 @@ mfw_df = DataFrame()
 mfSpectrum_df = DataFrame()
 
 
-for pair in 201:212
+@showprogress 1 "Computing..." for pair in 201:212
 
     for trial in 1:28
 
@@ -24,7 +24,16 @@ for pair in 201:212
                 # run mf analysis
                 mfSpectrum = ChhabraJensen(surrogates[:,i], qValues, scales)
                 # remove bad fits
-                #filter!(row -> row[:Rsqr_alpha] > .949, mfSpectrum)
+                filter!(row -> row[:Rsqr_alpha] > .949, mfSpectrum)
+
+                # diagnostic Plots
+                p1 = Plots.plot(mfSpectrum.alpha, mfSpectrum.falpha)
+                p2 = Plots.plot(mfSpectrum.Dq, qValues)
+
+                diagnostic_plot = Plots.plot(p1,p2, legend = false)
+
+                png(diagnostic_plot,)
+
                 # get mfw
                 mfw = maximum(mfSpectrum.alpha) - minimum(mfSpectrum.alpha)
                 # add row of data to the dataframe

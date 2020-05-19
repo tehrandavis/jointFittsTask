@@ -1,6 +1,6 @@
 
 
-using DataFrames, CSV, TimeseriesSurrogates
+using DataFrames, CSV, TimeseriesSurrogates, Statistics
 
 n_surrogates = 30
 
